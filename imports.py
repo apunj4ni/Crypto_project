@@ -53,3 +53,35 @@ for post in posts:
     print(post.author)
     print(post.score)
     print(post.selftext)
+
+# Sentiment analyzer 
+sentiment_analyzer = SentimentIntensityAnalyzer()
+
+# Calculate VADER sentiment score
+def get_textblob_sentiment(texts):
+    scores = [TextBlob(text).sentiment.polarity for text in texts]
+    return np.mean(scores)
+
+reddit_sentiment = get_vader_sentiment(reddit_texts)
+# x_sentiment = get_vader_sentiment(x_texts) 
+
+print(f'Reddit Sentiment Score: {reddit_sentiment:.3f}')
+# print(f'X Sentiment Score: {x_sentiment:.3f}')
+
+# Merge Sentiment Scores with BTC price
+sentiment_data = pd.DataFrame ({
+    'Date': [formatted_date],
+    'Reddit Sentiment': [reddit_sentiment]
+    # 'X Sentiment': [x_sentiment]
+})
+
+# Merge Sentiment Data with BTC Data
+btc_data.reset_index(inplace=True)
+btc_data['Date'] = btc_data['Date'].astype(str)
+
+btc_data = pd.merge(btc_data, sentiment_data, on = 'Date', how = 'left')
+
+# Default empty sentiment data with 0
+btc_data.fillna(0, inplace=True)
+
+print(btc_data.head())
