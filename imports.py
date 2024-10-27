@@ -14,6 +14,7 @@ import praw
 yesterday = datetime.now() - timedelta(1)
 formatted_date = yesterday.strftime('%Y-%m-%d')
 print(formatted_date)
+btc_ticker = yf.Ticker("BTC-USD")
 btc_data = btc_ticker.history(start="2017-09-17", end=formatted_date) # Store in btc_data variable for future use
 print(btc_data)
 
