@@ -23,7 +23,7 @@ btc_data['MA_50'] = btc_data['Close'].rolling(window = 50).mean()
 btc_data['MA_200'] = btc_data['Close'].rolling(window = 200).mean()
 
 # Add SD of returns
-btc_data['Daily_Return'] = btc_data['Close'].ptc_change()
+btc_data['Daily_Return'] = btc_data['Close'].pct_change()
 btc_data['Volatility_30d'] = btc_data['Daily_Return'].rolling(window = 30).std()
 
 # Show updated data frame
@@ -41,7 +41,7 @@ plt.legend()
 plt.show()
 
 # Initialize Reddit API with credentials
-reddit = praw.reddit(
+reddit = praw.Reddit(
     client_id = 'fKBzn113qbMMGvJEtOvtBQ',
     client_secret = 'mIFoOyzgLd0AH85BdhOGmUH8o-Qafg',
     user_agent = 'BTC Sentiment Analyzer by /u/Leadership-Think' #Reddit username
@@ -57,12 +57,19 @@ for post in posts:
 
 # Sentiment analyzer 
 sentiment_analyzer = SentimentIntensityAnalyzer()
-
+'''
 # Calculate VADER sentiment score
 def get_textblob_sentiment(texts):
     scores = [TextBlob(text).sentiment.polarity for text in texts]
     return np.mean(scores)
+'''
 
+reddit_texts = [post.title + " " + post.selftext for post in posts]
+
+def get_vader_sentiment(texts):
+    scores = [sentiment_analyzer.polarity_scores(text)['compound'] for text in texts]
+    return np.mean(scores)
+    
 reddit_sentiment = get_vader_sentiment(reddit_texts)
 # x_sentiment = get_vader_sentiment(x_texts) 
 
